@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 st.title ("3 BIO: Analítica de datos")
-st.markdown('En el presente dashboard se podra hacer pruebas a la base de datos del GrupLAC')
+st.markdown('## En el presente dashboard se podrá hacer pruebas a la base de datos del GrupLAC, así mismo para cuantificar el tiempo de ejecución para posibles consutas para el dashboard')
 
 st.header('Seleccione un grupo de investigación')
 @st.experimental_memo
