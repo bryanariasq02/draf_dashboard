@@ -1,9 +1,10 @@
 import pymongo
 import pandas as pd
+import streamlit as st
 
 
 def connect():
-    URI = 'mongodb://3bios:QdzXOhQ4GOb7OwQEHIjSb32HHW8N2WX3t1Nz8jdOKBLWFGBYGHcDaaNFVxivbRk8bA51VEyxIhTdugZBzE3YHg==@3bios.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@3bios@'
+    URI =  st.secrets["db_username"]
     CLIENT = pymongo.MongoClient(URI)
     DB = CLIENT['3Bios']
     COL = DB['GrupLAC']
