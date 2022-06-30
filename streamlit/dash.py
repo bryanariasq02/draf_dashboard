@@ -2,6 +2,8 @@ import streamlit as st
 import pymongo
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.express as px
+import time
 
 from data import *
 
@@ -10,16 +12,17 @@ st.set_page_config(
     page_icon="📈",
     layout="wide",
 )
-
 st.title ("3 BIO: Analítica de datos")
-st.markdown('## En el presente dashboard se podrá hacer pruebas a la base de datos del GrupLAC, así mismo para cuantificar el tiempo de ejecución para posibles consutas para el dashboard')
+st.markdown('En el presente dashboard se podra hacer pruebas a las bases de datos del proyecto 3BIO')
 
-st.header('Seleccione un grupo de investigación')
+inicio = time.time()
+st.header('Base de datos GrupLAC, MinCiencias')
 @st.experimental_memo
 def grupos_st(_COL):
     group = grupos(COL)
     return group
-COL = connect()
+COL, COL2 = connect()
+
 grupos_id = grupos_st(COL)
 grupos_id.drop(['_id'], axis=1, inplace = True)
 st.dataframe(grupos_id)
@@ -90,3 +93,50 @@ fig2.add_trace(go.Scatter(x=art['ano'], y = art['Counts'], fill='tozeroy',
                     mode='none'))
 st.header('Producción de artículos desde 2016')
 st.plotly_chart(fig2, use_container_width=True)
+
+
+fin = time.time()
+total = fin - inicio
+st.write(total, "Segundos")
+
+inicio = time.time()
+st.header('Base de datos SiB Colombia')
+anios = list(range(2012,2023))
+
+st.subheader('Consulta por años')
+
+optAnio = st.selectbox('Seleccione el año para consultar:', anios)
+
+datos_sib = SiB_db(COL2, optAnio)
+total = total_sib(COL2)
+row1_1, row1_2 = st.columns((2, 3))
+text = "Registros "+str(optAnio)
+with row1_1:
+    st.subheader('Total registros: '+str(total))
+    fig = go.Figure(go.Indicator(
+    mode = "gauge+number",
+    value = datos_sib,
+    domain = {'x': [0, 1], 'y': [0, 1]},
+    title = {'text': text}))
+
+    st.plotly_chart(fig, use_container_width=True)
+
+# @st.experimental_memo
+def cat_st(_COL2):
+   category = type_db(COL2)
+   return category
+
+category = cat_st(COL2)
+
+
+with row1_2:
+    st.subheader('Tipos de registros para todos los años')
+    
+    category = category.value_counts().reset_index(name='Counts')
+    fig3 = px.pie(category, values='Counts', names= 'type')
+    st.plotly_chart(fig3)
+
+
+fin = time.time()
+total = fin - inicio
+st.write(total, "Segundos")

@@ -8,8 +8,9 @@ def connect():
     CLIENT = pymongo.MongoClient(URI)
     DB = CLIENT['3Bios']
     COL = DB['GrupLAC']
+    COL2 = DB['SiB']
     # CLIENT.close()
-    return COL
+    return COL, COL2
 
 def grupos(COL):
     
@@ -55,6 +56,29 @@ def articulost_db(col, id):
         df = df.append(articulo, ignore_index=True)
     return df
 
+def SiB_db(col, anio):
+    sep = "-"
+    year = str(anio)+sep
+    filter={'created': {'$regex': year}}
+    project={'created': 1, "_id":0}
+    sib = col.count_documents(filter=filter,projection=project)
+    return sib
+    
+def total_sib(col):
+    sib = col.count_documents({})
+    return sib
+
+def type_db(col):
+    filter = {}
+    project = {'type':1, "_id":0}
+    result = col.find(filter=filter, projection=project)
+    
+    columnas = result[0].keys()
+    df       = pd.DataFrame(columns = columnas)
+    for res in result:
+        df = df.append(res, ignore_index=True)
+    return df
+    
 # col = connect()
 # grupos = grupos(col)
 # metrics = investigadores_db(col, str(5))
